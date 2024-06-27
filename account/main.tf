@@ -1,4 +1,4 @@
-data "google_billing_account" "Account" {
+data "google_billing_account" "Acct" {
 	display_name = "My Billing Account"
 	open = true
 }
