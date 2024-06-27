@@ -1,60 +1,18 @@
-data "google_billing_account" "Acct" {
-	display_name = "My Billing Account"
-	open = true
-}
-
-resource "random_password" "password" {
-	length = 16
-	numeric = false
-	special = false
-	lower = true
-	upper = false
-}
-
-resource "google_project" "testproject" {
-	name = "testproject"
-	project_id = random_password.password.result
-	billing_account = data.google_billing_account.acct.id
-}
-
-resource "null_resource" "set-project" {
-	 triggers = {
-    always_run = "${timestamp()}"
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 5.35.0"
+    }
+    external = {
+      source  = "hashicorp/external"
+      version = ">= 3.2.2"
+    }
   }
-	
-	provisioner "local-exec" {
-	command = "gcloud config set project ${google_project.testproject.project_id}"
-	}
 }
 
-resource "null_resource" "unset-project" {
-	provisioner "local-exec" {
-	when = destroy
-	command = "gcloud config unset project"
-	}
-}
-
-
-
-
-
-resource "null_resource" "enable-apis" {
-  depends_on = [
-    google_project.testproject,
-    null_resource.set-project
-  ]
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-        gcloud services enable compute.googleapis.com
-        gcloud services enable dns.googleapis.com
-        gcloud services enable storage-api.googleapis.com
-        gcloud services enable container.googleapis.com
-        gcloud services enable file.googleapis.com
-        gcloud services enable sqladmin.googleapis.com
-    EOT
-  }
+provider "google" {
+  billing_project       = var.billing_project_id
+  project               = var.billing_project_id
+  user_project_override = true
 }
