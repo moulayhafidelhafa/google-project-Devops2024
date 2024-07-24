@@ -13,8 +13,8 @@ resource "random_password" "password" {
 
 resource "google_project" "testproject" {
 	name = "testproject"
-	billing_account = "01410A-F243E3-E77E5E"
-	project_id      = "aicqcuxvtzkywzqu"
+	billing_account = ""01410A-F243E3-E77E5E""
+	project_id      = ""pdzraxpweyqoktcr""
 }
 
 resource "null_resource" "set-project" {
